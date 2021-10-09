@@ -25,7 +25,7 @@ def popularAnime():
 @app.route("/search")
 def searchAnime():
     searchValue = request.args.get("keyword")
-    results = getAnimeBySearchValue(searchValue)
+    results = getAnimeBySearchValue(searchValue) if searchValue is not None else getAnimeBySearchValue()
     return json.dumps(results)
 
 @app.route("/details/<id>")
@@ -33,6 +33,11 @@ def animeDetails(id):
     result = getAnimeDetails(id)
     return json.dumps(result)
 
+@app.route("/watch/<id>")
+def animeVideo(id):
+    ep = request.args.get("episode")
+    result = getAnimeEpisode(id, ep) if ep is not None else getAnimeEpisode(id)
+    return json.dumps(result)
 
 if __name__ == "__main__":
     app.run(debug=True, port= 8080)
