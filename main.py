@@ -1,44 +1,26 @@
-from bs4 import BeautifulSoup
-import requests
+from flask import Flask, json, request
+from API.anime import *
 
-BASEURL = "https://gogoanime.pe/"
+app = Flask(__name__)
 
-def getRecentAnime(page = 1):
-    params = { "page" : page}
-    html = requests.get(url = BASEURL, params = params).text
-    soup = BeautifulSoup(html, 'html.parser')
-    recentlyAdded = []
-    for element in soup.select("div.img"):
-        anime = {}
-        anime["id"] = element.a.attrs['title']
-        anime["name"] = element.a.attrs['title']
-        anime["img"] = element.img.attrs['src']
-        recentlyAdded.append(anime)
-    return recentlyAdded
+@app.route("/")
+def recentAnime():
+    page = int(request.args.get("page")) if request.args.get("page") is not None else 1
+    results = getRecentAnime(page)
+    return json.dumps(results)
+    
+@app.route("/genre/<genre>")
+def animeByGenre(genre):
+    page = int(request.args.get("page")) if request.args.get("page") is not None else 1
+    genre = genre.lower()
+    results = getAnimeByGenre(genre, page)
+    return json.dumps(results)
 
-def getAnimeByGenre(genre = "action", page = 1):
-    params = { "page" : page}
-    html = requests.get(url = f'{BASEURL}/genre/{genre}', params = params).text
-    soup = BeautifulSoup(html, 'html.parser')
-    animeByGenre = []
-    for element in soup.select("div.img"):
-        anime = {}
-        anime["id"] = element.a.attrs['title']
-        anime["name"] = element.a.attrs['title']
-        anime["img"] = element.img.attrs['src']
-        animeByGenre.append(anime)
-    return animeByGenre
+@app.route("/popular")
+def popularAnime(page = 1):
+    page = int(request.args.get("page")) if request.args.get("page") is not None else 1
+    results = getPopularAnime(page)
+    return json.dumps(results)
 
-def getPopularAnime(page = 1):
-    params = { "page" : page}
-    html = requests.get(url = f'{BASEURL}/popular.html', params = params).text
-    soup = BeautifulSoup(html, 'html.parser')
-    popularAnime = []
-    for element in soup.select("div.img"):
-        anime = {}
-        anime["id"] = element.a.attrs['title']
-        anime["name"] = element.a.attrs['title']
-        anime["img"] = element.img.attrs['src']
-        popularAnime.append(anime)
-    return popularAnime
-
+if __name__ == "__main__":
+    app.run(debug=True, port= 8080)
