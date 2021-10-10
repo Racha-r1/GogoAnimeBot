@@ -37,4 +37,6 @@ def animeDetails(id):
 def animeVideo(id):
     ep = request.args.get("episode")
     result = getAnimeEpisode(id, ep) if ep is not None else getAnimeEpisode(id)
-    return json.dumps(result)
+    return json.dumps(result)  
+
+    
