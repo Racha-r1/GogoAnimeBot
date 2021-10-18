@@ -124,6 +124,3 @@ def getAnimeEpisode(id, ep = 1):
     except:
         return video
     return video
-
-if __name__ == "__main__":
-    getPopularAnime()
