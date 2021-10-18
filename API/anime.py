@@ -16,6 +16,7 @@ def getRecentAnime(page = 1):
             anime["id"] = "-".join(element.p.a.attrs['href'].rsplit("-", 2)[:1])[1:]
             anime["name"] = element.div.a.attrs['title']
             anime["img"] = element.div.img.attrs['src']
+            anime["ep"] = element.select("p.episode")[0].string.split(" ")[1]
             recentlyAdded.append(anime)
     except:
         return recentlyAdded
@@ -46,13 +47,14 @@ def getPopularAnime(page = 1):
     params = { "page" : page}
     popularAnime = []
     try:
-        html = requests.get(url = f'{BASEURL}/popular.html', params = params).text
+        html = requests.get(url = f'{BASEURL}popular.html', params = params).text
         soup = BeautifulSoup(html, 'html.parser')
         for element in soup.select("ul.items li"):
             anime = {}
             anime["id"] = element.p.a.attrs['href'][10:]
             anime["name"] = element.div.a.attrs['title']
             anime["img"] = element.div.img.attrs['src']
+            anime["released"] = element.select("p.released")[0].string.strip().strip("\n")
             popularAnime.append(anime)
     except:
         return popularAnime
@@ -123,3 +125,5 @@ def getAnimeEpisode(id, ep = 1):
         return video
     return video
 
+if __name__ == "__main__":
+    getPopularAnime()
